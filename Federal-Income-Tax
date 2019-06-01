@@ -1,0 +1,156 @@
+#Austin Holmes
+#6/1/2019
+#This program calculates federal income tax in the U.S. for 2019. All currency is in USD. All tax information is from quickenloans.com.
+
+#Print a welcome statement
+print("Welcome to the federal tax calculator. This program calculates federal income tax in the U.S. for 2019. All currency is in USD.")
+
+#Ask how the tax payer is filing
+valid_input = False
+while (valid_input == False):
+    print("If you are a single filer, input '1'")
+    print("If you are married filing jointly, input '2'")
+    print("If you are married filing separately, input '3'")
+    print("If you are filing as the head of household input 4")
+    filing = input()
+    if filing == '1' or filing == '2' or filing == '3' or filing == '4':
+        valid_input = True
+        filing = int(filing)
+    else:
+        print("Error: Invalid Input")
+
+#Define the tax brackets for single filer
+if filing == 1:
+    tax_bracket1 = (0,9700)
+    tax_bracket2 = (9701,39475)
+    tax_bracket3 = (39476,84200)
+    tax_bracket4 = (84201,160725)
+    tax_bracket5 = (160726,204100)
+    tax_bracket6 = (204101,510300)
+    tax_bracket7 = 510301
+
+#Define the tax brackets for married filing jointly
+elif filing == 2:
+    tax_bracket1 = (0,19400)
+    tax_bracket2 = (19401,78950)
+    tax_bracket3 = (78956,168400)
+    tax_bracket4 = (168401,321450)
+    tax_bracket5 = (321451,408200)
+    tax_bracket6 = (408201,612350)
+    tax_bracket7 = 612351
+
+#Define the tax brackets for married filing separately
+elif filing == 3:
+    tax_bracket1 = (0,9700)
+    tax_bracket2 = (9701,39475)
+    tax_bracket3 = (39476,84200)
+    tax_bracket4 = (84201,160725)
+    tax_bracket5 = (160726,204100)
+    tax_bracket6 = (204101,306175)
+    tax_bracket7 = 306176
+
+#Define the tax brackets for married filing separately
+elif filing == 4:
+    tax_bracket1 = (0,13850)
+    tax_bracket2 = (13851,52850)
+    tax_bracket3 = (52851,84200)
+    tax_bracket4 = (84201,160700)
+    tax_bracket5 = (160701,204100)
+    tax_bracket6 = (204101,510300)
+    tax_bracket7 = 510301
+
+#Create a dictionary with the tax rate for each tax bracket (2019)
+tax_rate = {tax_bracket1:10,tax_bracket2:12,tax_bracket3:22,tax_bracket4:24,tax_bracket5:32,tax_bracket6:35,tax_bracket7:37}
+
+#Ask if the tax payer would like to apply the standard tax deduction or input their own
+valid_input = False
+while (valid_input == False):
+    print("Would you like to apply the standard tax deduction?(yes/no) If no, you can input your own.")
+    std_deduct = input()
+    
+    if std_deduct == 'yes':
+        valid_input = True
+        if filing == 1 or filing == 3:
+            deduct = 12200
+        elif filing == 2:
+            deduct = 24400
+        elif filing == 4:
+            deduct = 18350
+    
+    elif std_deduct == 'no':
+        valid_input = True
+        print("Please input your tax deduction:")
+        deduct = int(input())
+    
+    else:
+        print("Error: Invalid Input")
+
+#Ask for yearly salary
+valid_input = False
+while (valid_input == False):
+    print("What is your yearly salary?")
+    gross_income = int(input())
+    
+    #Find taxable income by subtracting the deduction
+    taxable = gross_income-deduct
+    print("With a tax deduction of", deduct,"your taxable income is",taxable)
+    valid_input = True
+
+#Define taxes such that it covers all taxes in that bracket plus the taxes bellow it 
+#(e.g. tax4 includes the full tax from tax brackets 1, 2, 3, and 4)
+#This makes it so the calculation for these taxes only need to be included once
+tax1 = tax_bracket1[1]*tax_rate[tax_bracket1]/100
+tax2 = tax1 + tax_bracket2[1]*tax_rate[tax_bracket2]/100
+tax3 = tax2 + tax_bracket3[1]*tax_rate[tax_bracket3]/100
+tax4 = tax3 + tax_bracket4[1]*tax_rate[tax_bracket4]/100
+tax5 = tax4 + tax_bracket5[1]*tax_rate[tax_bracket5]/100
+tax6 = tax5 + tax_bracket6[1]*tax_rate[tax_bracket6]/100
+
+#If the input is negative output an error message
+if gross_income<tax_bracket1[0]:
+    print('Error: Invalid Input')
+
+#Tax Bracket 1
+elif (gross_income>tax_bracket1[0]) and (gross_income<tax_bracket1[1]):
+    income_tax = taxable*tax_rate[tax_bracket1]/100
+    net_income = gross_income-income_tax
+    print("You are in the first tax bracket (from",tax_bracket1[0],"to",tax_bracket1[1],")")
+    
+#Tax Bracket 2
+elif (gross_income>tax_bracket2[0]) and (gross_income<tax_bracket2[1]):
+    income_tax = (gross_income-tax_bracket1[1])*tax_rate[tax_bracket2]/100+tax1
+    net_income = gross_income-income_tax
+    print("You are in the second tax bracket (from",tax_bracket2[0],"to",tax_bracket2[1],")")
+    
+#Tax Bracket 3
+elif (gross_income>tax_bracket3[0]) and (gross_income<tax_bracket3[1]):
+    income_tax = (gross_income-tax_bracket2[1])*tax_rate[tax_bracket3]/100+tax2
+    net_income = gross_income-income_tax
+    print("You are in the third tax bracket (from",tax_bracket3[0],"to",tax_bracket3[1],")")
+    
+#Tax Bracket 4
+elif (gross_income>tax_bracket4[0]) and (gross_income<tax_bracket4[1]):
+    income_tax = (gross_income-tax_bracket3[1])*tax_rate[tax_bracket4]/100+tax3
+    net_income = gross_income-income_tax
+    print("You are in the fourth tax bracket (from",tax_bracket4[0],"to",tax_bracket4[1],")")
+    
+#Tax Bracket 5
+elif (gross_income>tax_bracket5[0]) and (gross_income<tax_bracket5[1]):
+    income_tax = (gross_income-tax_bracket4[1])*tax_rate[tax_bracket5]/100+tax4
+    net_income = gross_income-income_tax
+    print("You are in the fifth tax bracket (from",tax_bracket5[0],"to",tax_bracket4[1],")")
+    
+#Tax Bracket 6
+elif (gross_income>tax_bracket6[0]) and (gross_income<tax_bracket6[1]):
+    income_tax = (gross_income-tax_bracket5[1])*tax_rate[tax_bracke6]/100+tax5
+    net_income = gross_income-income_tax
+    print("You are in the sixth tax bracket (from",tax_bracket6[0],"to",tax_bracket6[1],")")
+    
+#Tax Bracket 7
+elif (gross_income>tax_bracket7[0]):
+    income_tax = (gross_income-tax_bracket6[1])*tax_rate[tax_bracket7]/100+tax6
+    net_income = gross_income-income_tax
+    print("You are in the seventh tax bracket (more than",tax_bracket7,")")
+    
+print("Your federal income tax is:",income_tax)
+print("Your net income is:",net_income)
